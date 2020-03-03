@@ -8,6 +8,7 @@ public:
 	CharacterLuigi(SDL_Renderer* renderer, string imagePath, Vector2D startPosition);
 	~CharacterLuigi();
 
+	void	Render();
 	void	Update(float deltaTime, SDL_Event e);
 };
 

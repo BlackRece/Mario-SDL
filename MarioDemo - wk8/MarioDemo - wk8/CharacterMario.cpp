@@ -2,10 +2,24 @@
 
 CharacterMario::CharacterMario(SDL_Renderer* renderer, string imagePath, Vector2D startPosition)
 	: Character(renderer, imagePath, startPosition) {
+	SetFacingDirection(FACING::FACING_RIGHT);
 }
 
 CharacterMario::~CharacterMario()
 {
+}
+
+void CharacterMario::Render() {
+	switch (GetFacingDirection()) {
+	case FACING::FACING_LEFT:
+		Character::Render(SDL_FLIP_HORIZONTAL);
+		break;
+	case FACING::FACING_RIGHT:
+		Character::Render(SDL_FLIP_NONE);
+		break;
+	default:
+		break;
+	}
 }
 
 void CharacterMario::Update(float deltaTime, SDL_Event e) {

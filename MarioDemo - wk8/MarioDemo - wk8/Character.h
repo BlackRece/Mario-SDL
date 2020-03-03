@@ -37,7 +37,7 @@ public:
 	Character(SDL_Renderer* renderer, string imagePath, Vector2D startPosition);
 	~Character();
 
-	virtual void	Render();
+	virtual void	Render(SDL_RendererFlip flip);
 	virtual void	Update(float deltaTime, SDL_Event e);
 
 	Vector2D		GetPosition();
@@ -47,6 +47,8 @@ public:
 
 	void			Jump();
 	void			SetPosition(Vector2D newPosition);
+	void			SetFacingDirection(FACING newDirection);
+	FACING			GetFacingDirection();
 };
 
 #endif // CHARACTER_H

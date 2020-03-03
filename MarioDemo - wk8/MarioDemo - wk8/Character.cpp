@@ -16,8 +16,6 @@ Character::Character(SDL_Renderer* renderer, string imagePath, Vector2D startPos
 
 	mSpeed = MOVEMENT_SPEED;
 
-	mFacingDirection = FACING::FACING_RIGHT;
-
 	mMovingLeft = false;
 	mMovingRight = false;
 
@@ -80,10 +78,11 @@ void Character::MoveRight(float deltaTime) {
 	mFacingDirection = FACING::FACING_RIGHT;
 }
 
-void Character::Render() {
+void Character::Render(SDL_RendererFlip flip) {
+	mTexture->Render(mPosition, flip);
+	/*
 	switch (mFacingDirection) {
 	case FACING::FACING_LEFT:
-		mTexture->Render(mPosition, SDL_FLIP_HORIZONTAL);
 		break;
 	case FACING::FACING_RIGHT:
 		mTexture->Render(mPosition, SDL_FLIP_NONE);
@@ -91,10 +90,19 @@ void Character::Render() {
 	default:
 		break;
 	}
+	*/
 }
 
 void Character::SetPosition(Vector2D newPosition) {
 	mPosition = newPosition;
+}
+
+FACING Character::GetFacingDirection() {
+	return mFacingDirection;
+}
+
+void Character::SetFacingDirection(FACING newDirection) {
+	mFacingDirection = newDirection;
 }
 
 void Character::Update(float deltaTime, SDL_Event e) {
