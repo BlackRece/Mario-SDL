@@ -6,6 +6,8 @@
 /* usr lib */
 #include "Commons.h"
 #include "GameScreen.h"
+#include "TTF_Text.h"
+#include "StringRender.h"
 
 class Texture2D; 
 
@@ -14,6 +16,8 @@ class GameScreenIntro :
 private:
 	Texture2D* mBackgroundTexture;
 	SCREENS mScreen;
+	TTF_Text mTexts;
+	StringRender mString;
 
 	bool SetUpLevel();
 

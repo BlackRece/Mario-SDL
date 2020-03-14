@@ -3,6 +3,7 @@
 
 /* STD lib */
 #include <vector>
+#include <unordered_map>
 
 /* SDL lib */
 #include <SDL.h>
@@ -16,6 +17,7 @@
 #include "LevelMap.h"
 #include "CharacterKoopa.h"
 #include "CharacterCoin.h"
+#include "SoundEffect.h"
 
 class Texture2D;
 class Character;
@@ -38,6 +40,9 @@ private:
 
 	LevelMap*				mLevelMap;
 	PowBlock*				mPowBlock;
+	float					mPowTimer;
+
+	std::unordered_map<string, SoundEffect*> mSounds;
 
 	bool					mScreenshake;
 	float					mScreenshakeTime;
@@ -45,9 +50,10 @@ private:
 	float					mBackgroundYPos;
 
 	void DoScreenshake();
-	bool SetUpLevel();
 	void SetLevelMap();
-	void UpdatePOWBlock();
+	bool SetUpLevel();
+	void SetUpSFX();
+	void UpdatePOWBlock(float deltaTime);
 
 	void UpdateEnemies(float deltaTime, SDL_Event e);
 	void CreateKoopa(Vector2D position, FACING direction, float speed);

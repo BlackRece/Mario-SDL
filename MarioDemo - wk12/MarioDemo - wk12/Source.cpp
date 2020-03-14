@@ -11,6 +11,7 @@
 #include "Commons.h"
 #include "Texture2D.h"
 #include "GameScreenManager.h"
+#include <SDL_ttf.h>
 
 using namespace::std;
 
@@ -102,12 +103,18 @@ bool InitSDL() {
 				//Initialise the Mixer.
 				if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
 					cout << "Mixer could not initialise. Error: " << Mix_GetError() << endl;
-					return false;
+					success = false;
 				} else {
 					LoadMusic("music/Super Mario Drum and Bass loop.mp3");
 					if (Mix_PlayingMusic() == 0) {
 						Mix_PlayMusic(gMusic, -1);
 					}
+				}
+
+				//Initialise TTF loading
+				if (TTF_Init() == -1) {
+					cout << "SDL_ttf could not initialise. Error: " << TTF_GetError() << endl;
+					success = false;
 				}
 			}
 		}
@@ -134,6 +141,8 @@ void CloseSDL() {
 	gWindow = nullptr;
 
 	//Quit SDL sub-systems.
+	TTF_Quit();
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }

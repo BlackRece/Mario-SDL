@@ -9,6 +9,7 @@ CharacterCoin::CharacterCoin(
 	mValue = 0;
 	mFrameDelay = 0.0f;
 	mCurrentFrame = 0;
+	mFrameForward = true;
 	mIsAlive = true;
 
 	mSingleSpriteWidth = (float)GetSpriteWidth() / 3;	//3 sprites on this spritesheet in 1 row.
@@ -27,7 +28,7 @@ void CharacterCoin::Render() {
 	//Get the portion of the spritesheet you want to draw.
 	//
 	SDL_Rect portionOfSpriteSheet = {
-		(int)(mCurrentFrame * mSingleSpriteWidth), 0,				//XPos, YPos
+		(int)(mCurrentFrame * mSingleSpriteWidth), 0,		//XPos, YPos
 		(int)mSingleSpriteWidth, (int)mSingleSpriteHeight	//WidthOfSingleSprite, HeightOfSingleSprite
 	};
 
@@ -51,9 +52,19 @@ void CharacterCoin::Update(float deltaTime, SDL_Event e) {
 		mFrameDelay = ANIMATION_DELAY;
 
 		//Move frame on.
-		mCurrentFrame++;
+		if (mFrameForward) {
+			mCurrentFrame++;
+		} else {
+			mCurrentFrame--;
+		}
 
 		//Loop frame around if it goes beyond the number of frames.
-		if (mCurrentFrame > 2) mCurrentFrame = 0;
+		if (mCurrentFrame > 2) {
+			mCurrentFrame = 2;
+			mFrameForward = false;
+		} else if (mCurrentFrame < 0) {
+			mCurrentFrame = 0;
+			mFrameForward = true;
+		}
 	}
 }

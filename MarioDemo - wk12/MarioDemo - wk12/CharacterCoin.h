@@ -13,6 +13,7 @@ private:
 	float mCurrentFrame;
 
 	bool mIsAlive;
+	bool mFrameForward;
 
 public:
 	CharacterCoin(SDL_Renderer* renderer, string imagePath, LevelMap* map,

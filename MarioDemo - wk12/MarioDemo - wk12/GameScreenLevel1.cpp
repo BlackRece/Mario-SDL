@@ -12,6 +12,7 @@ GameScreenLevel1::GameScreenLevel1(SDL_Renderer* renderer, SCREENS screen) :
 	mScreen = screen;
 	
 	mLevelMap = nullptr;
+	mPowTimer = BLOCK_TIME;
 	
 	mEnemies.clear();
 	mSpawnTimer = 0.0f;
@@ -20,6 +21,7 @@ GameScreenLevel1::GameScreenLevel1(SDL_Renderer* renderer, SCREENS screen) :
 	mCoins.clear();
 	
 	SetUpLevel();
+	SetUpSFX();
 }
 
 GameScreenLevel1::~GameScreenLevel1() {
@@ -176,6 +178,49 @@ bool GameScreenLevel1::SetUpLevel() {
 	return success;
 }
 
+void GameScreenLevel1::SetUpSFX() {
+	pair<string, SoundEffect*> sfx;
+	string path;
+
+	/* DEATH SFX */
+	//set path
+	path = SFX_PATH; path += SFX_DEATH;
+
+	//set sfx id
+	sfx.first = "DEATH";
+
+	//create sfx
+	sfx.second = new SoundEffect(path);
+
+	//fill sfx array if loading was successfull
+	if (sfx.second != nullptr) mSounds.insert(sfx);
+
+	/* GAME OVER SFX */
+	path = SFX_PATH; path += SFX_GAME_OVER;
+	sfx.first = "GAME_OVER";
+	sfx.second = new SoundEffect(path);
+	if (sfx.second != nullptr) mSounds.insert(sfx);
+
+	/* JUMP SFX */
+	path = SFX_PATH; path += SFX_JUMP;
+	sfx.first = "JUMP";
+	sfx.second = new SoundEffect(path);
+	if (sfx.second != nullptr) mSounds.insert(sfx);
+
+	/* COIN SFX */
+	path = SFX_PATH; path += SFX_COIN;
+	sfx.first = "COIN";
+	sfx.second = new SoundEffect(path);
+	if (sfx.second != nullptr) mSounds.insert(sfx);
+
+	/* KILL SFX */
+	path = SFX_PATH; path += SFX_KILL;
+	sfx.first = "KILL";
+	sfx.second = new SoundEffect(path);
+	if (sfx.second != nullptr) mSounds.insert(sfx);
+
+}
+
 void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 	//DEBUG
 	if (deltaTime > 16.0f) deltaTime = 16.0f;
@@ -222,9 +267,9 @@ void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 	}
 
 	//Update our Pow Block.
-	if (mPowBlock->IsAvailable()) {
-		UpdatePOWBlock();
-	}
+	//if (mPowBlock->IsAvailable()) {
+		UpdatePOWBlock(deltaTime);
+	//}
 
 	//Update enemies.
 	UpdateEnemies(deltaTime, e);
@@ -241,10 +286,12 @@ void GameScreenLevel1::UpdateCoins(float deltaTime, SDL_Event e) {
 
 			if (mCoins[i]->IsAlive()) {
 				if (Collisions::Instance()->Circle(mCoins[i], marioCharacter)) {
+					mSounds["COIN"]->Play();
 					mCoins[i]->SetAlive(false);
 				}
 
 				if (Collisions::Instance()->Circle(mCoins[i], luigiCharacter)) {
+					mSounds["COIN"]->Play();
 					mCoins[i]->SetAlive(false);
 				}
 
@@ -321,18 +368,28 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, SDL_Event e) {
 				) ) {
 				//Ignore the collisions if the enemy is behind a pipe?
 			} else {
-				if (Collisions::Instance()->Circle(mEnemies[i], marioCharacter)) {
+				if (Collisions::Instance()->Circle(
+					mEnemies[i]->GetCollisionCircle(),
+					marioCharacter->GetCollisionCircle()
+				)) {
 					if (static_cast<CharacterKoopa*>(mEnemies[i])->IsInjured()) {
+						mSounds["KILL"]->Play();
 						static_cast<CharacterKoopa*>(mEnemies[i])->SetAlive(false);
 					} else {
+						mSounds["DEATH"]->Play();
 						marioCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
 					}
 				}
 
-				if (Collisions::Instance()->Circle(mEnemies[i], luigiCharacter)) {
+				if (Collisions::Instance()->Circle(
+					mEnemies[i]->GetCollisionCircle(),
+					luigiCharacter->GetCollisionCircle()
+				)) {
 					if (static_cast<CharacterKoopa*>(mEnemies[i])->IsInjured()) {
+						mSounds["KILL"]->Play();
 						static_cast<CharacterKoopa*>(mEnemies[i])->SetAlive(false);
 					} else {
+						mSounds["DEATH"]->Play();
 						luigiCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
 					}
 				}
@@ -358,21 +415,34 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, SDL_Event e) {
 		CreateKoopa(Vector2D(325, 32), FACING::FACING_LEFT, KOOPA_SPEED);
 
 		//Reset timer
-		if (mSpawnCounter > SPAWN_TIME / 2) {
-			mSpawnTimer = deltaTime * 10;	// spawn every 10 frames! lol
+		if (mSpawnCounter >= (SPAWN_TIME / 10)) {
+			mSpawnTimer = SPAWN_TIME / 10;
 		} else {
 			mSpawnTimer = SPAWN_TIME - (mSpawnCounter * 10);
 		}
+
 	} else {
 		mSpawnTimer -= deltaTime * 10;
 	}
 }
 
-void GameScreenLevel1::UpdatePOWBlock() {
+void GameScreenLevel1::UpdatePOWBlock(float deltaTime) {
+	//Reset PowBlock
+	if (mPowTimer <= 0.0f) {
+		if (!mPowBlock->IsAvailable()) {
+			mPowTimer = BLOCK_TIME;
+
+			mPowBlock->ResetHits();
+		}
+	} else {
+		mPowTimer -= deltaTime;
+	}
+
 	if (Collisions::Instance()->Box(marioCharacter->GetCollisionBox(), mPowBlock->GetCollisionBox())) {
 		if (mPowBlock->IsAvailable()) {
 			//Collided whilst jumping.
 			if (marioCharacter->IsJumping()) {
+				mSounds["KILL"]->Play();
 				DoScreenshake();
 				mPowBlock->TakeAHit();
 				marioCharacter->CancelJump();
@@ -384,6 +454,7 @@ void GameScreenLevel1::UpdatePOWBlock() {
 		if (mPowBlock->IsAvailable()) {
 			//Collided whilst jumping.
 			if (luigiCharacter->IsJumping()) {
+				mSounds["KILL"]->Play();
 				DoScreenshake();
 				mPowBlock->TakeAHit();
 				luigiCharacter->CancelJump();

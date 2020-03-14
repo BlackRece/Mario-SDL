@@ -55,3 +55,12 @@ void PowBlock::TakeAHit() {
 		mNumberOfHitsLeft--;
 	}
 }
+
+void PowBlock::ResetHits() {
+	if (mNumberOfHitsLeft <= 0) {
+		mLevelMap->ChangeTileAt(8, 7, 1);
+		mLevelMap->ChangeTileAt(8, 8, 1);
+
+		mNumberOfHitsLeft = 3;
+	}
+}

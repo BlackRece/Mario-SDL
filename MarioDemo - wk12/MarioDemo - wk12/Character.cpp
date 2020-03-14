@@ -59,7 +59,7 @@ float Character::GetCollisionRadius() {
 }
 
 Circle2D Character::GetCollisionCircle() {
-	return Circle2D(mPosition.x, mPosition.y, mCollisionRadius/2);
+	return Circle2D(mPosition.x, mPosition.y, TILE_SIZE);
 }
 
 void Character::CancelJump() {
