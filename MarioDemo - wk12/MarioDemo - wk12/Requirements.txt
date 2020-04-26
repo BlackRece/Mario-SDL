@@ -16,16 +16,16 @@ Marks	Component 									Criteria
 *1 		Collision Detection:	Bounding Circle 	Bounding Circle collision works accurately. 
 5 		Level Map Component Implemented 			Class for drawing tiles as a background successfully implemented. 
 2 		Map read in from file 						Map stored externally and read in. 
-?1 		Characters collide with Tiles 				Characters do not intersect with background tiles. 
+*1 		Characters collide with Tiles 				Characters do not intersect with background tiles. 
 *5 		Sound Manager Implemented 					Class for storing and playing sound files successfully implemented. 
 *1 		Music plays 								Music loops throughout the level. 
-1 		SFX played on Jump 							Relevant sound effect played on Jump and Death. 
+*1 		SFX played on Jump 							Relevant sound effect played on Jump and Death. 
 *5 		Font Component Implemented 					Class to handle drawing text to the screen successfully implemented. 
-1 		Score Text displayed on screen 				Score is displayed. 
+*1 		Score Text displayed on screen 				Score is displayed. 
 *5 		Level 1:	AI Characters 					Enemy characters act appropriately as would be expected from a Mario Bros game. 
 25 		Level 2:	Extra Features 					Marks awarded for more complex features beyond that of level 1 implemented.  
 													Example features: Animated Mario, High score tables, Multiplayer, Animations… 
 10 		Demonstration 								Ability to answer questions regarding code. No demonstration = no marks for this element. 
 100 	Total 	 
 
-36		Marks so far
+44		Marks so far

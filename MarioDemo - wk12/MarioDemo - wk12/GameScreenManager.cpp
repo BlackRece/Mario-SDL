@@ -34,30 +34,23 @@ void GameScreenManager::ChangeScreen(SCREENS newScreen) {
 		delete mCurrentScreen;
 	}
 
-	GameScreenLevel1* tmpLevel1Screen = nullptr;
-	GameScreenIntro* tmpIntroScreen = nullptr;
-
 	switch (newScreen) {
-	case SCREENS::SCREEN_INTRO:
-		tmpIntroScreen = new GameScreenIntro(mRenderer, newScreen);
-		mCurrentScreen = (GameScreen*)tmpIntroScreen;
-		tmpIntroScreen = nullptr;
-		break;
-	case SCREENS::SCREEN_MENU:
-		break;
-	case SCREENS::SCREEN_LEVEL1:
-		tmpLevel1Screen = new GameScreenLevel1(mRenderer, newScreen);
-		mCurrentScreen = (GameScreen*)tmpLevel1Screen;
-		tmpLevel1Screen = nullptr;
-		break;
-	case SCREENS::SCREEN_LEVEL2:
-		break;
-	case SCREENS::SCREEN_GAMEOVER:
-		break;
-	case SCREENS::SCREEN_HIGHSCORES:
-		break;
-	default:
-		break;
+		case SCREENS::SCREEN_INTRO:
+			mCurrentScreen = (GameScreen*)(new GameScreenIntro(mRenderer, newScreen));
+			break;
+		case SCREENS::SCREEN_MENU:
+			break;
+		case SCREENS::SCREEN_LEVEL1:
+			mCurrentScreen = (GameScreen*)(new GameScreenLevel1(mRenderer, newScreen));
+			break;
+		case SCREENS::SCREEN_LEVEL2:
+			break;
+		case SCREENS::SCREEN_GAMEOVER:
+			break;
+		case SCREENS::SCREEN_HIGHSCORES:
+			break;
+		default:
+			break;
 	}
 }
 

@@ -6,10 +6,15 @@
 #include "Constants.h"
 #include "Collisions.h"
 #include "CharacterGoomba.h"
+#include <string>
 
 GameScreenLevel1::GameScreenLevel1(SDL_Renderer* renderer, SCREENS screen) :
 	GameScreen(renderer, screen) {
 	mScreen = screen;
+	string fontPath = "fonts/PixelFlag.ttf";// "fonts/SuperPlumberBrothers.ttf";
+	if (!mMarioFont.LoadFont(renderer, fontPath, 28))
+		std::cout << "Failed setting up font glyph array! (" <<
+		fontPath << ")" << std::endl;
 	
 	mLevelMap = nullptr;
 	mPowTimer = BLOCK_TIME;
@@ -19,6 +24,9 @@ GameScreenLevel1::GameScreenLevel1(SDL_Renderer* renderer, SCREENS screen) :
 	mSpawnCounter = 0;
 
 	mCoins.clear();
+
+	mMarioScore = 0;
+	mLuigiScore = 0;
 	
 	SetUpLevel();
 	SetUpSFX();
@@ -39,7 +47,7 @@ GameScreenLevel1::~GameScreenLevel1() {
 
 	if (!mEnemies.empty()){
 		for (int i = 0; i < mEnemies.size(); i++) {
-			delete mEnemies[i];
+			delete mEnemies[i].second;
 		}
 
 		mEnemies.clear();
@@ -56,21 +64,21 @@ GameScreenLevel1::~GameScreenLevel1() {
 
 void GameScreenLevel1::CreateCoins(Vector2D position, int value) {
 	CharacterCoin* coinCharacter = 
-		new CharacterCoin(mRenderer, "images/Coin.png", mLevelMap, position);
+		new CharacterCoin(mRenderer, COIN_PATH, mLevelMap, position);
 	mCoins.push_back(coinCharacter);
 }
 
 void GameScreenLevel1::CreateKoopa(Vector2D position, FACING direction, float speed) {
 	CharacterKoopa* koopaCharacter = new CharacterKoopa(
 		mRenderer, "images/Koopa.png", mLevelMap, position, direction, speed);
-	mEnemies.push_back(koopaCharacter);
+	mEnemies.push_back(make_pair('K', koopaCharacter));
 	mSpawnCounter++;
 }
 
 void GameScreenLevel1::CreateGoomba(Vector2D position, FACING direction, float speed) {
 	CharacterGoomba* goombaCharacter = new CharacterGoomba(
-		mRenderer, "images/Goomba.png", mLevelMap, position, direction, speed);
-	mEnemies.push_back(goombaCharacter);
+		mRenderer, "images/Goomba2.png", mLevelMap, position, direction, speed);
+	mEnemies.push_back(make_pair('G', goombaCharacter));
 	mSpawnCounter++;
 }
 
@@ -82,7 +90,11 @@ void GameScreenLevel1::DoScreenshake() {
 
 	if (!mEnemies.empty()) {
 		for (int i = 0; i < mEnemies.size(); i++) {
-			static_cast< CharacterKoopa* >(mEnemies[i])->TakeDamage();
+			if (mEnemies[i].first == 'K') {
+				static_cast<CharacterKoopa*>(mEnemies[i].second)->TakeDamage();
+			} else {
+				static_cast<CharacterGoomba*>(mEnemies[i].second)->TakeDamage();
+			}
 		}
 	}
 
@@ -97,9 +109,51 @@ void GameScreenLevel1::Render() {
 	//Draw the background.
 	mBackgroundTexture->Render(Vector2D(0, mBackgroundYPos), SDL_FLIP_NONE);
 
+	int charWidth = mMarioFont.GetWidth('W');
+	int charHeight = mMarioFont.GetHeight('H');
+	string sMarioScore = "Mario: " + std::to_string(mMarioScore);
+	string sLuigiScore = "Luigi: " + std::to_string(mLuigiScore);
+
+	//Draw HUD.
+	//box dimensions
+	SDL_Rect marioPos = {
+		charWidth,
+		SCREEN_HEIGHT - charHeight,
+		charWidth * sMarioScore.length(),
+		charHeight
+	};
+	SDL_SetRenderDrawColor(mRenderer, 240, 20, 0, 255);
+	SDL_RenderFillRect(mRenderer, &marioPos);
+
+	//text dimensions
+	marioPos.x += 2;
+	marioPos.y += 2;
+
+	mMarioFont.RenderString(marioPos, sMarioScore, { 0x00, 0x00, 0x00 });
+
+	//box dimensions
+	SDL_Rect luigiPos = {
+		(SCREEN_WIDTH - charWidth) - (charWidth * sLuigiScore.length()),
+		SCREEN_HEIGHT - charHeight,
+		charWidth * sLuigiScore.length(),
+		charHeight
+	};
+	SDL_SetRenderDrawColor(mRenderer, 36, 178, 36, 255);
+	SDL_RenderFillRect(mRenderer, &luigiPos);
+	
+	//text dimensions
+	luigiPos.x += 2;
+	luigiPos.y += 2;
+
+	mMarioFont.RenderString(luigiPos, sLuigiScore, {0x00, 0x00, 0x00});
+
 	//Draw the Enemies.
 	for (unsigned int i = 0; i < mEnemies.size(); i++) {
-		static_cast<CharacterKoopa*>(mEnemies[i])->Render();
+		if (mEnemies[i].first == 'K') {
+			static_cast<CharacterKoopa*>(mEnemies[i].second)->Render();
+		} else {
+			static_cast<CharacterGoomba*>(mEnemies[i].second)->Render();
+		}
 	}
 
 	//Draw the characters.
@@ -116,6 +170,57 @@ void GameScreenLevel1::Render() {
 }
 
 void GameScreenLevel1::SetLevelMap() {
+	/*
+	*** Game Screen ***
+	3 level maps ( foreground, playground and background )
+
+	foreground and background defines decorations
+	
+	playground defines block and character interactions
+
+	*/
+
+	/*
+	
+	0 = POW Block
+	*/
+
+	//foreground map
+	int fgmap[MAP_HEIGHT][MAP_WIDTH] = {
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0},
+		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
+		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+	};
+
+	//playground map
+	int bgmap[MAP_HEIGHT][MAP_WIDTH] = {
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0},
+		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
+		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+	};
+
+	//playground map
 	int map[MAP_HEIGHT][MAP_WIDTH] = {
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -123,7 +228,7 @@ void GameScreenLevel1::SetLevelMap() {
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
 		{1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
@@ -245,13 +350,6 @@ void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 	marioCharacter->Update(deltaTime, e);
 	luigiCharacter->Update(deltaTime, e);
 
-	// Old Circle Collision
-	/*
-	if (Collisions::Instance()->Circle(marioCharacter, luigiCharacter)) {
-		cout << "Circle Bro Smash!" << endl;
-	}
-	*/
-
 	// New Circle Collision
 	if (Collisions::Instance()->Circle(
 		marioCharacter->GetCollisionCircle(),
@@ -267,9 +365,7 @@ void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 	}
 
 	//Update our Pow Block.
-	//if (mPowBlock->IsAvailable()) {
-		UpdatePOWBlock(deltaTime);
-	//}
+	UpdatePOWBlock(deltaTime);
 
 	//Update enemies.
 	UpdateEnemies(deltaTime, e);
@@ -286,11 +382,13 @@ void GameScreenLevel1::UpdateCoins(float deltaTime, SDL_Event e) {
 
 			if (mCoins[i]->IsAlive()) {
 				if (Collisions::Instance()->Circle(mCoins[i], marioCharacter)) {
+					mMarioScore += mCoins[i]->mValue;
 					mSounds["COIN"]->Play();
 					mCoins[i]->SetAlive(false);
 				}
 
 				if (Collisions::Instance()->Circle(mCoins[i], luigiCharacter)) {
+					mLuigiScore += mCoins[i]->mValue;
 					mSounds["COIN"]->Play();
 					mCoins[i]->SetAlive(false);
 				}
@@ -324,79 +422,114 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, SDL_Event e) {
 		for (unsigned int i = 0; i < mEnemies.size(); i++) {
 			
 			//Check if enemy is on the bottomn row of tiles
-			if (mEnemies[i]->GetPosition().y > 300.0f) {
+			if (mEnemies[i].second->GetPosition().y > 300.0f) {
 			
 				//Is the enemy off screen to the left / right?
 				if (
-					mEnemies[i]->GetPosition().x < (float)(-mEnemies[i]->GetCollisionBox().w*0.5f) ||
-					mEnemies[i]->GetPosition().x > SCREEN_WIDTH - (float)(mEnemies[i]->GetCollisionBox().w*0.5f)
-					) static_cast<CharacterKoopa*>(mEnemies[i])->SetAlive(false);
+					mEnemies[i].second->GetPosition().x < (float)(-mEnemies[i].second->GetCollisionBox().w * 0.5f) ||
+					mEnemies[i].second->GetPosition().x > SCREEN_WIDTH - (float)(mEnemies[i].second->GetCollisionBox().w * 0.5f)
+					) {
+					if (mEnemies[i].first = 'K')
+						static_cast<CharacterKoopa*>(mEnemies[i].second)->SetAlive(false);
+					else
+						static_cast<CharacterGoomba*>(mEnemies[i].second)->SetAlive(false);
+				}
 			} else {
 				//Is the enemy off screen to the left?
-				if ( mEnemies[i]->GetPosition().x < 
-					(float)(-mEnemies[i]->GetCollisionBox().w * 0.5f ) ) {
-					mEnemies[i]->SetPosition(
+				if ( mEnemies[i].second->GetPosition().x < 
+					(float)(-mEnemies[i].second->GetCollisionBox().w * 0.5f ) ) {
+					mEnemies[i].second->SetPosition(
 						Vector2D(
-						(float)(SCREEN_WIDTH - mEnemies[i]->GetCollisionBox().w),
-							mEnemies[i]->GetPosition().y
+						(float)(SCREEN_WIDTH - mEnemies[i].second->GetCollisionBox().w),
+							mEnemies[i].second->GetPosition().y
 						)
 					);
 				}
 
 				//Is the enemy off screen to the right?
-				if (mEnemies[i]->GetPosition().x >
-					SCREEN_WIDTH - (float)(mEnemies[i]->GetCollisionBox().w * 0.5f)) {
-					mEnemies[i]->SetPosition(
+				if (mEnemies[i].second->GetPosition().x >
+					SCREEN_WIDTH - (float)(mEnemies[i].second->GetCollisionBox().w * 0.5f)) {
+					mEnemies[i].second->SetPosition(
 						Vector2D(
-						(float)(mEnemies[i]->GetCollisionBox().w),
-							mEnemies[i]->GetPosition().y
+						(float)(mEnemies[i].second->GetCollisionBox().w),
+							mEnemies[i].second->GetPosition().y
 						)
 					);
 				}
 			}
 
 			//Now do the update.
-			mEnemies[i]->Update(deltaTime, e);
+			mEnemies[i].second->Update(deltaTime, e);
 
 			//Check to see if enemy collides with the player.
+			//but first, ignore the collisions if the enemy is behind a pipe?
 			if ( (
-					mEnemies[i]->GetPosition().y > 300.0f ||
-					mEnemies[i]->GetPosition().y <= 64.0f
+					mEnemies[i].second->GetPosition().y > 300.0f ||
+					mEnemies[i].second->GetPosition().y <= 64.0f
 				) && (
-					mEnemies[i]->GetPosition().x < 64.0f || 
-					mEnemies[i]->GetPosition().x > SCREEN_WIDTH-96.0f
+					mEnemies[i].second->GetPosition().x < 64.0f || 
+					mEnemies[i].second->GetPosition().x > SCREEN_WIDTH-96.0f
 				) ) {
-				//Ignore the collisions if the enemy is behind a pipe?
 			} else {
+				//check collisions with player
 				if (Collisions::Instance()->Circle(
-					mEnemies[i]->GetCollisionCircle(),
+					mEnemies[i].second->GetCollisionCircle(),
 					marioCharacter->GetCollisionCircle()
 				)) {
-					if (static_cast<CharacterKoopa*>(mEnemies[i])->IsInjured()) {
-						mSounds["KILL"]->Play();
-						static_cast<CharacterKoopa*>(mEnemies[i])->SetAlive(false);
+					if (mEnemies[i].first == 'K') {
+						if (static_cast<CharacterKoopa*>(mEnemies[i].second)->IsInjured()) {
+							mMarioScore += static_cast<CharacterKoopa*>(mEnemies[i].second)->mValue;
+							mSounds["KILL"]->Play();
+							static_cast<CharacterKoopa*>(mEnemies[i].second)->SetAlive(false);
+						} else {
+							mSounds["DEATH"]->Play();
+							marioCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
+						}
 					} else {
-						mSounds["DEATH"]->Play();
-						marioCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
+						if (static_cast<CharacterGoomba*>(mEnemies[i].second)->IsInjured()) {
+							mMarioScore += static_cast<CharacterGoomba*>(mEnemies[i].second)->mValue;
+							mSounds["KILL"]->Play();
+							static_cast<CharacterGoomba*>(mEnemies[i].second)->SetAlive(false);
+						}
+						else {
+							mSounds["DEATH"]->Play();
+							marioCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
+						}
 					}
 				}
 
 				if (Collisions::Instance()->Circle(
-					mEnemies[i]->GetCollisionCircle(),
+					mEnemies[i].second->GetCollisionCircle(),
 					luigiCharacter->GetCollisionCircle()
 				)) {
-					if (static_cast<CharacterKoopa*>(mEnemies[i])->IsInjured()) {
-						mSounds["KILL"]->Play();
-						static_cast<CharacterKoopa*>(mEnemies[i])->SetAlive(false);
+					if (mEnemies[i].first == 'K') {
+						if (static_cast<CharacterKoopa*>(mEnemies[i].second)->IsInjured()) {
+							mLuigiScore += static_cast<CharacterKoopa*>(mEnemies[i].second)->mValue;
+							mSounds["KILL"]->Play();
+							static_cast<CharacterKoopa*>(mEnemies[i].second)->SetAlive(false);
+						} else {
+							mSounds["DEATH"]->Play();
+							luigiCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
+						}
 					} else {
-						mSounds["DEATH"]->Play();
-						luigiCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
+						if (static_cast<CharacterGoomba*>(mEnemies[i].second)->IsInjured()) {
+							mLuigiScore += static_cast<CharacterGoomba*>(mEnemies[i].second)->mValue;
+							mSounds["KILL"]->Play();
+							static_cast<CharacterGoomba*>(mEnemies[i].second)->SetAlive(false);
+						} else {
+							mSounds["DEATH"]->Play();
+							luigiCharacter->SetState(CHARACTERSTATE_PLAYER_DEATH);
+						}
 					}
 				}
 			}
 
 			//If the enemy is no longer alive, then schedule it for deletion.
-			if (!static_cast<CharacterKoopa*>(mEnemies[i])->IsAlive()) enemyIndexToDelete = i;
+			if (mEnemies[i].first == 'K') {
+				if (!static_cast<CharacterKoopa*>(mEnemies[i].second)->IsAlive()) enemyIndexToDelete = i;
+			} else {
+				if (!static_cast<CharacterGoomba*>(mEnemies[i].second)->IsAlive()) enemyIndexToDelete = i;
+			}
 		}
 
 		//-------------------------
@@ -409,10 +542,17 @@ void GameScreenLevel1::UpdateEnemies(float deltaTime, SDL_Event e) {
 	//--------------------
 	//Add more enemies
 	//--------------------
+	int enemyType = (rand() % 5);
 	if (mSpawnTimer <= 0.0f) {
-		//Set up 2 more bad guys.
-		CreateKoopa(Vector2D(150, 32), FACING::FACING_RIGHT, KOOPA_SPEED);
-		CreateKoopa(Vector2D(325, 32), FACING::FACING_LEFT, KOOPA_SPEED);
+		if (enemyType >= 3) {
+			//Set up 2 more koopa guys.
+			CreateKoopa(Vector2D(150, 32), FACING::FACING_RIGHT, KOOPA_SPEED);
+			CreateKoopa(Vector2D(325, 32), FACING::FACING_LEFT, KOOPA_SPEED);
+		} else {
+			//Set up 2 more goomba guys.
+			CreateGoomba(Vector2D(150, 96), FACING::FACING_RIGHT, GOOMBA_SPEED);
+			CreateGoomba(Vector2D(325, 96), FACING::FACING_LEFT, GOOMBA_SPEED);
+		}
 
 		//Reset timer
 		if (mSpawnCounter >= (SPAWN_TIME / 10)) {

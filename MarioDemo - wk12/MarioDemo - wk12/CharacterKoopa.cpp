@@ -8,6 +8,8 @@ CharacterKoopa::CharacterKoopa(
 	SetMovementSpeed(movementSpeed);
 	SetPosition(startPosition);
 
+	mValue = 10;
+
 	mIsAlive = true;
 
 	mInjured = false;
@@ -39,11 +41,9 @@ void CharacterKoopa::Render() {
 	int left = 0.0f;
 
 	//If injured move the left position to be the left position of the second image on the spritesheet.
-	if (mInjured)
-		left = mSingleSpriteWidth;
+	if (mInjured) left = mSingleSpriteWidth;
 
 	//Get the portion of the spritesheet you want to draw.
-	//
 	SDL_Rect portionOfSpriteSheet = {
 		left, 0,											//XPos, YPos
 		(int)mSingleSpriteWidth, (int)mSingleSpriteHeight	//WidthOfSingleSprite, HeightOfSingleSprite

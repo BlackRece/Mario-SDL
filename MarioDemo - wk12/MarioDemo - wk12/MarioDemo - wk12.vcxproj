@@ -182,7 +182,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="back-map.txt" />
+    <Text Include="fore-map.txt" />
     <Text Include="Requirements.txt" />
+    <Text Include="Text.txt" />
+    <Text Include="play-map.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

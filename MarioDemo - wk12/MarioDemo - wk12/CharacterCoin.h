@@ -8,7 +8,6 @@ class CharacterCoin :
 private:
 	float mSingleSpriteWidth, mSingleSpriteHeight;
 
-	int mValue;
 	float mFrameDelay;
 	float mCurrentFrame;
 
@@ -18,6 +17,8 @@ private:
 public:
 	CharacterCoin(SDL_Renderer* renderer, string imagePath, LevelMap* map,
 		Vector2D startPosition);
+
+	unsigned int mValue;
 
 	void Jump();
 

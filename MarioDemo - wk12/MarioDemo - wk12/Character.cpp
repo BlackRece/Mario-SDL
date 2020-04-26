@@ -94,17 +94,6 @@ void Character::MoveRight(float deltaTime) {
 
 void Character::Render(SDL_RendererFlip flip) {
 	mTexture->Render(mPosition, flip);
-	/*
-	switch (mFacingDirection) {
-	case FACING::FACING_LEFT:
-		break;
-	case FACING::FACING_RIGHT:
-		mTexture->Render(mPosition, SDL_FLIP_NONE);
-		break;
-	default:
-		break;
-	}
-	*/
 }
 
 void Character::Render(SDL_Rect srcRect, SDL_Rect destRect, SDL_RendererFlip flip) {

@@ -18,6 +18,7 @@
 #include "CharacterKoopa.h"
 #include "CharacterCoin.h"
 #include "SoundEffect.h"
+#include "TTF_Text.h"
 
 class Texture2D;
 class Character;
@@ -28,11 +29,14 @@ class GameScreenLevel1 :
 private:
 	Texture2D*				mBackgroundTexture;
 	SCREENS					mScreen;
+	TTF_Text				mMarioFont;
 
 	CharacterMario*			marioCharacter;
 	CharacterLuigi*			luigiCharacter;
+	unsigned int			mMarioScore;
+	unsigned int			mLuigiScore;
 
-	vector<Character*>		mEnemies;
+	vector< pair<char, Character*> >		mEnemies;
 	float					mSpawnTimer;
 	int						mSpawnCounter;
 

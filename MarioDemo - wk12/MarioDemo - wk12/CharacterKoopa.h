@@ -19,6 +19,8 @@ public:
 	CharacterKoopa(SDL_Renderer* renderer, string imagePath, LevelMap* map,
 		Vector2D startPosition, FACING startFacing, float movementSpeed);
 
+	unsigned int mValue;
+
 	void TakeDamage();
 	void Jump();
 

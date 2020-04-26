@@ -3,7 +3,7 @@
 
 //Screen Dimensions.
 #define SCREEN_WIDTH				512
-#define SCREEN_HEIGHT				416
+#define SCREEN_HEIGHT				448
 #define SCREENSHAKE_DURATION		0.25f
 
 //Movement. 
@@ -21,19 +21,29 @@
 #define GRAVITY						200.0f
 
 //Level.
-#define MAP_HEIGHT					13
+#define MAP_HEIGHT					14
 #define MAP_WIDTH					16
 #define BLOCK_TIME					50.0f
+#define TERRAIN_PATH				"images/TerrainSheet.png"
 
 //Enemy.
 #define INJURED_TIME				2.5f
 #define SPAWN_TIME					200.0f
+#define G_KOOPA_PATH				"images/GreenKoopaSheet.png"
+#define G_KOOPA_VALUE				10
+#define R_KOOPA_PATH				"images/RedKoopaSheet.png"
+#define R_KOOPA_VALUE				20
+#define R_SPINY_PATH				"images/RedSpinyShhet.png"
+#define R_SPINY_VALUE				30
 
 //Misc.
 #define CHARACTERSTATE_PLAYER_DEATH true
 #define ANIMATION_DELAY				0.15f
-#define COIN_VALUE					10
-#define FONT_PATH					"fonts/SuperPlumberBrothers.ttf"
+#define FONT_PATH					"fonts/BubblePixel.TTF"
+#define COIN_PATH					"images/CoinSheet.png"
+#define COIN_VALUE					100
+#define COIN_FRAME_W				8		//number of frames wide
+#define COIN_FRAME_H				1		//number of frames tall
 
 //SFX.
 #define SFX_PATH					"sounds/"

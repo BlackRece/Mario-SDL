@@ -8,13 +8,15 @@ CharacterGoomba::CharacterGoomba(
 	SetMovementSpeed(movementSpeed);
 	SetPosition(startPosition);
 
+	mValue = 20;
+
 	mIsAlive = true;
 
 	mInjured = false;
 	mInjuredTime = 0.0f;
 
-	mSingleSpriteWidth = (float)GetSpriteWidth();	
-	mSingleSpriteHeight = (float)GetSpriteHeight() / 2;		//2 sprites on this spritesheet in 1 column.
+	mSingleSpriteWidth = (float)GetSpriteWidth() / 2;	//2 sprites on this spritesheet in 1 row.
+	mSingleSpriteHeight = (float)GetSpriteHeight();		
 }
 
 void CharacterGoomba::FlipRightWayUp() {
@@ -22,7 +24,7 @@ void CharacterGoomba::FlipRightWayUp() {
 		(GetFacingDirection() == FACING::FACING_LEFT) ? FACING::FACING_RIGHT : FACING::FACING_LEFT
 	);
 	mInjured = false;
-	Jump();	//TODO: ensure that the right jump function is being called.
+	Jump();
 }
 
 
@@ -36,31 +38,37 @@ void CharacterGoomba::Jump() {
 
 void CharacterGoomba::Render() {
 	//Variable to hold the left position of the sprite we want to draw.
-	int top = 0.0f;
+	int left = 0.0f;
 
 	//If injured move the left position to be the left position of the second image on the spritesheet.
-	if (mInjured)
-		top = mSingleSpriteHeight;
+	if (mInjured) left = mSingleSpriteHeight;
 
 	//Get the portion of the spritesheet you want to draw.
 	//
 	SDL_Rect portionOfSpriteSheet = {
-		0, top,												//XPos, YPos
+		left, 0,											//XPos, YPos
 		(int)mSingleSpriteWidth, (int)mSingleSpriteHeight	//WidthOfSingleSprite, HeightOfSingleSprite
 	};
 
 	//Determine where you want it drawn.
 	SDL_Rect destRect = {
 		(int)(mPosition.x), (int)(mPosition.y),				//XPos, YPos
-		32, 32		//source file is a different size (not 32 x 32 pixels!
-		//(int)mSingleSpriteWidth, (int)mSingleSpriteHeight	//WidthOfSingleSprite, HeightOfSingleSprite
+		(int)mSingleSpriteWidth, (int)mSingleSpriteHeight	//WidthOfSingleSprite, HeightOfSingleSprite
 	};
 
+	SDL_RendererFlip flip;
+	if (mInjured) {
+		if (GetFacingDirection() == FACING::FACING_LEFT) {
+			flip = SDL_RendererFlip(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+		} else {
+			flip = SDL_RendererFlip(SDL_FLIP_VERTICAL);
+		}
+	} else {
+		flip = SDL_RendererFlip((GetFacingDirection() == FACING::FACING_LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+	}
+
 	//Then draw it facing the correct direction.
-	Character::Render(
-		portionOfSpriteSheet, destRect,
-		(GetFacingDirection() == FACING::FACING_LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE
-	);
+	Character::Render(portionOfSpriteSheet, destRect, flip);
 }
 
 void CharacterGoomba::TakeDamage() {
@@ -85,8 +93,7 @@ void CharacterGoomba::Update(float deltaTime, SDL_Event e) {
 			mMovingLeft = false;
 			mMovingRight = true;
 		}
-	}
-	else {
+	} else {
 		//We should not be moving when injured.
 		mMovingLeft = false;
 		mMovingRight = false;

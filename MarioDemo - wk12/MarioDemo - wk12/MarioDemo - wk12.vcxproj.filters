@@ -136,5 +136,9 @@
     <Text Include="Requirements.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Text.txt" />
+    <Text Include="back-map.txt" />
+    <Text Include="fore-map.txt" />
+    <Text Include="play-map.txt" />
   </ItemGroup>
 </Project>
