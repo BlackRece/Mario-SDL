@@ -15,6 +15,9 @@
 #define G_KOOPA_SPEED				0.15f
 #define R_KOOPA_SPEED				0.2f
 #define GOOMBA_SPEED				0.05f
+#define LEVEL_SPEED					5.0f
+#define LEVEL_BG_SPEED				20.0f
+#define LEVEL_FG_SPEED				2.0f
 #define TILE_HEIGHT					32
 #define TILE_WIDTH					32
 #define TILE_SIZE					16

@@ -23,6 +23,16 @@ GameScreen_HighScores::~GameScreen_HighScores() {
 
 void GameScreen_HighScores::Render() {
 
+	SDL_Color textCol = { 0xFF, 0xFF, 0xFF };
+
+	SDL_Rect textRect = {
+		TILE_WIDTH * 5, 
+		16 + int(TILE_HEIGHT * 7),
+		TILE_WIDTH * 6,
+		TILE_HEIGHT * 5
+	};
+
+	/* highscore title */
 	//14 wide x 16 tall
 	mBGRect = {
 		TILE_WIDTH * 4,
@@ -42,7 +52,33 @@ void GameScreen_HighScores::Render() {
 	//render text
 	mBGRect.x += 2;
 	mBGRect.y += 2;
-	mScoreFont.RenderString(mBGRect, "High Scores", { 0xFF, 0xFF, 0xFF });
+	mScoreFont.RenderString(mBGRect, "High Scores", textCol);
+
+	/* highscores table */
+	//scores background
+	mBackImage.RenderPlate(textRect);
+
+	//scores text
+	textRect.h = 16;
+	textRect.w += TILE_WIDTH;
+	textRect.x -= int(TILE_WIDTH * 0.5f);
+
+	std::string num;
+
+	for (int i = 0; i < HighScores::Instance()->GetTotal(); i++) {
+		textRect.y = 6 + (TILE_HEIGHT * 6) + (18 * i);
+		num = std::to_string(i+1);
+		if (num.length() == 1) {
+			num = "0" + std::to_string(i+1);
+		}
+		mScoreFont.RenderString(
+			textRect,
+			num + ": " +
+			HighScores::Instance()->GetScores(i),
+			textCol
+		);
+	}
+
 }
 
 void GameScreen_HighScores::Update(float deltaTime, SDL_Event e) {

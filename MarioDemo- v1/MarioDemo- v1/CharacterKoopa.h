@@ -30,7 +30,7 @@ public:
 	void			Bounce();
 	void			Jump();
 
-	void			Render();
+	void			Render(float offsetX = 0.0f);
 	void			Update(float deltaTime, SDL_Event e);
 
 	bool			IsAlive() { return mIsAlive; }

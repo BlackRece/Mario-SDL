@@ -12,18 +12,21 @@ private:
 	bool mIsAlive;
 
 public:
+	unsigned int	mValue;
+
 	CharacterCoin(SDL_Renderer* renderer, string imagePath, LevelMap* map,
 		Vector2D startPosition);
 
-	unsigned int	mValue;
-
+	bool			IsAlive() { return mIsAlive; }
+	
 	void			Jump();
 
-	void			Render();
+	void			Render(float offsetX = 0.0f);
+	
+	void			SetAlive(bool living) { mIsAlive = living; }
+	
 	void			Update(float deltaTime, SDL_Event e) override;
 
-	bool			IsAlive() { return mIsAlive; }
-	void			SetAlive(bool living) { mIsAlive = living; }
 };
 
 #endif // !CHARACTERCOIN_H

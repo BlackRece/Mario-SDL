@@ -42,7 +42,9 @@ SDL_Rect PowBlock::GetCollisionBox(int index) {
 	};
 };
 
-void PowBlock::Render() {
+
+
+void PowBlock::Render(float offsetX) {
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	if (mNumberOfHitsLeft) {
@@ -58,7 +60,7 @@ void PowBlock::Render() {
 
 			//Determine where you want it drawn.
 			SDL_Rect destRect = { 
-				int(it->x * mSingleSpriteWidth),
+				int((it->x * mSingleSpriteWidth) - offsetX),
 				int(it->y * mSingleSpriteHeight),
 				(int)mSingleSpriteWidth,
 				(int)mSingleSpriteHeight 
@@ -79,6 +81,12 @@ void PowBlock::ResetHits() {
 		}
 
 		mNumberOfHitsLeft = 3;
+	}
+}
+
+void PowBlock::SetPos(int index, Point2D newPos) {
+	if (index >= 0 && index < GetAmount()) {
+		mPositions[index] = newPos;
 	}
 }
 

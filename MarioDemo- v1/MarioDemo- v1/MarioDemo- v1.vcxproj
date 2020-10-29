@@ -154,6 +154,7 @@
     <ClInclude Include="GameScreen.h" />
     <ClInclude Include="GameScreenIntro.h" />
     <ClInclude Include="GameScreenLevel1.h" />
+    <ClInclude Include="GameScreenLevel2.h" />
     <ClInclude Include="GameScreenManager.h" />
     <ClInclude Include="GameScreen_HighScores.h" />
     <ClInclude Include="HighScores.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="GameScreen.cpp" />
     <ClCompile Include="GameScreenIntro.cpp" />
     <ClCompile Include="GameScreenLevel1.cpp" />
+    <ClCompile Include="GameScreenLevel2.cpp" />
     <ClCompile Include="GameScreenManager.cpp" />
     <ClCompile Include="GameScreen_HighScores.cpp" />
     <ClCompile Include="HighScores.cpp" />
@@ -191,7 +193,9 @@
     <Text Include="maps\back-map.txt" />
     <Text Include="maps\fore-map.txt" />
     <Text Include="maps\play-map.txt" />
+    <Text Include="POW_Scores.txt" />
     <Text Include="Requirements.txt" />
+    <Text Include="RUN_Scores.txt" />
     <Text Include="Text.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

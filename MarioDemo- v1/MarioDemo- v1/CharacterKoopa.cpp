@@ -63,7 +63,7 @@ void CharacterKoopa::Bounce() {
 	}
 }
 
-void CharacterKoopa::Render() {
+void CharacterKoopa::Render(float offsetX) {
 	SDL_RendererFlip flip;
 
 	if (mInjured) {
@@ -80,7 +80,7 @@ void CharacterKoopa::Render() {
 		}
 	}
 
-	RenderSprite( flip );
+	RenderSprite(flip, offsetX);
 }
 
 void CharacterKoopa::TakeDamage() {

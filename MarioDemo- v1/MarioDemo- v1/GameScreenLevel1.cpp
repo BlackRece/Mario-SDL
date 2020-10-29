@@ -9,7 +9,7 @@
 #include <string>
 
 GameScreenLevel1::GameScreenLevel1(SDL_Renderer* renderer, SCREENS screen, GameScreenManager* manager) :
-	GameScreen(renderer, screen, manager) {
+	GameScreen(renderer, screen, manager), mIsHighScore(false) {
 	mScreen = screen;
 	string fontPath = "fonts/PixelFlag.ttf";// "fonts/SuperPlumberBrothers.ttf";
 	if (!mMarioFont.LoadFont(renderer, fontPath, 28))
@@ -173,12 +173,30 @@ void GameScreenLevel1::Render() {
 	mLevelMap->RenderForeground();
 
 	//Draw the characters.
-	//TODO: fix/do character animations
 	if(mMarioLives > 0) marioCharacter->Render();
 	if(mLuigiLives > 0) luigiCharacter->Render();
 
 	//Draw HUD.
 	RenderHUD();
+}
+
+void GameScreenLevel1::RenderHighScore() {
+	std::string sScoreTitle = "New High Score!";
+	std::string sScoreText;
+
+	SDL_Color cScoreTitleCol = { 0xFF, 0x00, 0x00 };
+	SDL_Color cScoreTextCol = { 0xFF, 0xFF, 0xFF };
+
+	SDL_Rect scoreRect = {
+		TILE_WIDTH * 2,
+		TILE_HEIGHT * 8,
+		TILE_WIDTH * 10,
+		TILE_HEIGHT * 3
+	};
+
+	mLevelMap->RenderPlate(scoreRect);
+	mMarioFont.RenderString(scoreRect, sScoreTitle, cScoreTitleCol);
+
 }
 
 void GameScreenLevel1::RenderHUD() {
@@ -259,6 +277,10 @@ void GameScreenLevel1::RenderHUD() {
 		gameOverPos.y += 2;
 		mMarioFont.RenderString(gameOverPos, sGameOverText, { 0xFF, 0xFF, 0xFF });
 	}
+
+	//highscore
+	if (mIsHighScore) RenderHighScore();
+
 }
 
 void GameScreenLevel1::SetLevelMap() {
@@ -384,14 +406,16 @@ void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 		if (mScreenshake) UpdateScreenShake(deltaTime, e);
 
 		//Update the player(s).
-		marioCharacter->Update(deltaTime, e);
-		luigiCharacter->Update(deltaTime, e);
+		if(mMarioLives > 0) marioCharacter->Update(deltaTime, e);
+		if(mLuigiLives > 0) luigiCharacter->Update(deltaTime, e);
 
 		//Update our Pow Block.
 		UpdatePOWBlock(deltaTime);
 
-		//Update enemies.
-		UpdateEnemies(deltaTime, e);
+		if (!mIsHighScore) {
+			//Update enemies.
+			UpdateEnemies(deltaTime, e);
+		}
 
 		//Update coins.
 		UpdateCoins(deltaTime, e);
@@ -409,10 +433,13 @@ void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 		} else {
 			mGameCounter -= deltaTime;
 		}
+
 	} else {
 
 		if (mGameOverTimer > 0) {
-			mGameOverTimer -= deltaTime * 10;
+			if(!UpdateHighScore()) {
+				mGameOverTimer -= deltaTime * 10;
+			}
 		} else {
 			CleanUp();
 			SetNextScreen(SCREENS::SCREEN_INTRO);
@@ -421,9 +448,26 @@ void GameScreenLevel1::Update(float deltaTime, SDL_Event e) {
 	}
 }
 
-void GameScreenLevel1::UpdateHighScore() {
+bool GameScreenLevel1::UpdateHighScore() {
+	bool result = false;
+	int lowScore = 0, bestScore = 0;
+	
+	if (mMarioScore == mLuigiScore)
+		bestScore = mLuigiScore;
+	else
+		bestScore = (mMarioScore > mLuigiScore) ? mMarioScore : mLuigiScore;
+
+	if(HighScores::Instance()->LoadScores())
+		lowScore = HighScores::Instance()->GetLowScore();
+
+	if (lowScore < bestScore) {
+		mIsHighScore = true;
+	} 
 	/*
-	singleton?
+	singleton? no
+	there's already a highscores screen
+	use it for input as well as output!
+	call from previous screen and pass in correct scores file
 	load scores file "POWPanic.txt"
 	sort scores
 	get lowest score
@@ -433,6 +477,7 @@ void GameScreenLevel1::UpdateHighScore() {
 			add score and name to high score
 	show high scores
 	*/
+	return result;
 }
 
 void GameScreenLevel1::UpdateCoins(float deltaTime, SDL_Event e) {

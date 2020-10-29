@@ -84,6 +84,9 @@
     <ClInclude Include="GameScreen_HighScores.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameScreenLevel2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Character.cpp">
@@ -149,6 +152,9 @@
     <ClCompile Include="GameScreen_HighScores.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameScreenLevel2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Requirements.txt">
@@ -166,5 +172,7 @@
     <Text Include="maps\play-map.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="POW_Scores.txt" />
+    <Text Include="RUN_Scores.txt" />
   </ItemGroup>
 </Project>

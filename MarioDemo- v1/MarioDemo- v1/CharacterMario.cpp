@@ -44,13 +44,13 @@ CharacterMario::~CharacterMario()
 {
 }
 
-void CharacterMario::Render() {
+void CharacterMario::Render(float offsetX) {
 	switch (GetFacingDirection()) {
 		case FACING::FACING_LEFT:
-			RenderSprite(SDL_FLIP_HORIZONTAL);
+			RenderSprite(SDL_FLIP_HORIZONTAL, offsetX);
 		break;
 		case FACING::FACING_RIGHT:
-			RenderSprite(SDL_FLIP_NONE);
+			RenderSprite(SDL_FLIP_NONE, offsetX);
 		break;
 		default: /* no other option */ break;
 	}

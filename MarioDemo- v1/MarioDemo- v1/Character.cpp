@@ -288,7 +288,7 @@ bool Character::HitBlock(float nextX) {
 		GetCollisionBox()));
 }
 
-void Character::RenderSprite(SDL_RendererFlip flip) {
+void Character::RenderSprite(SDL_RendererFlip flip, float offsetX) {
 	Anime tmpAnime = GetSpriteAnime();
 	string tmpSize = GetSpriteSize(mAnimID);
 
@@ -300,14 +300,7 @@ void Character::RenderSprite(SDL_RendererFlip flip) {
 	};
 
 	SDL_Rect destRect = GetSpriteRect();
-	/*
-	SDL_Rect destRect = {
-		(int)mPosition.x, 
-		(int)mPosition.y,
-		mSpriteSize[tmpSize].x,
-		mSpriteSize[tmpSize].y
-	};
-	*/
+	destRect.x -= int(offsetX);
 
 	Character::Render(srcRect, destRect, flip);
 }

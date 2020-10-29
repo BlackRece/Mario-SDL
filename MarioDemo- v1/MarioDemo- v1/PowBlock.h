@@ -27,16 +27,18 @@ private:
 	float			mTimer;
 
 public:
-	PowBlock(SDL_Renderer* renderer, LevelMap* map);
-	~PowBlock();
+					PowBlock(SDL_Renderer* renderer, LevelMap* map);
+					~PowBlock();
 
-	SDL_Rect GetCollisionBox(int index);
-	bool IsAvailable() { return mNumberOfHitsLeft > 0; }
-	int GetAmount() { return mPositions.size(); }
-	void Render();
-	void ResetHits();
-	void TakeAHit();
-	void Update(float deltaTime);
+	SDL_Rect		GetCollisionBox(int index);
+	bool			IsAvailable() { return mNumberOfHitsLeft > 0; }
+	int				GetAmount() { return mPositions.size(); }
+	Point2D			GetPos(int index) { return mPositions[index]; }
+	void			Render(float offsetX = 0.0f);
+	void			ResetHits();
+	void			SetPos(int index, Point2D newPos);
+	void			TakeAHit();
+	void			Update(float deltaTime);
 };
 
 #endif // !POWBLOCK_H

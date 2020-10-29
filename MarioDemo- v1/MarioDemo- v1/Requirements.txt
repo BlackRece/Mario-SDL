@@ -23,9 +23,10 @@ Marks	Component 									Criteria
 *5 		Font Component Implemented 					Class to handle drawing text to the screen successfully implemented. 
 *1 		Score Text displayed on screen 				Score is displayed. 
 *5 		Level 1:	AI Characters 					Enemy characters act appropriately as would be expected from a Mario Bros game. 
-25 		Level 2:	Extra Features 					Marks awarded for more complex features beyond that of level 1 implemented.  
+25		Level 2:	Extra Features 					Marks awarded for more complex features beyond that of level 1 implemented.  
 													Example features: Animated Mario, High score tables, Multiplayer, Animations… 
 10 		Demonstration 								Ability to answer questions regarding code. No demonstration = no marks for this element. 
 100 	Total 	 
 
-44		Marks so far
+52		Marks so far
+99		Actual Marks Received

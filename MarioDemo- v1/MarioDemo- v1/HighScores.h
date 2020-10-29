@@ -13,7 +13,7 @@
 struct ScoreData {
 	std::string name;		//player's name
 	std::string bros;		//Mario Brother's name
-	int score = -1;				//player's score
+	int score = -1;			//player's score
 };
 
 class HighScores {
@@ -21,7 +21,8 @@ protected:
 	ScoreData mScores[10];
 
 private:
-	static HighScores* mInstance;
+	static HighScores*	mInstance;
+	std::string			mPath;
 
 	HighScores();
 
@@ -30,11 +31,14 @@ public:
 
 	~HighScores();
 
-	void AddScore();
-	void GetName();
-	void LoadScores(std::string score_path = POW_FILE);
-	void SaveScores(std::string score_path = POW_FILE);
-	void SortScores();
+	void			AddScore();
+	int				GetLowScore();
+	void			GetName();
+	int				GetTotal() { return int(NUM_OF_SCORES); }
+	std::string		GetScores(int index);
+	bool			LoadScores(std::string score_path = POW_FILE);
+	bool			SaveScores(std::string score_path = POW_FILE);
+	void			SortScores();
 
 };
 

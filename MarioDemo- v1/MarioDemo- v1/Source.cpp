@@ -206,7 +206,7 @@ bool Update() {
 
 			//Middle mouse button was pressed
 		case 2:
-			success = true;
+			//success = true;
 			break;
 
 			//Right mouse button was pressed

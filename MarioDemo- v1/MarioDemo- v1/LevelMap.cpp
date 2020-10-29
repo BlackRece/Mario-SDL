@@ -29,6 +29,30 @@ LevelMap::~LevelMap() {
 	mTexture = nullptr;
 }
 
+//overwrites each column with the one to the right,
+//then adds new column to right-most colum
+void LevelMap::AddMapCol(char ground, char*& newCol) {
+	std::map<int, char*>tMap;
+	std::map<int, char*>::iterator tI;
+
+	switch (ground) {
+		case 'b': case 'B': tMap = mBackMap; break;
+		case 'f': case 'F': tMap = mForeMap; break;
+		case 'p': case 'P': tMap = mPlayMap; break;
+		default: return; break;
+	}
+
+	for (tI = tMap.begin(); tI != tMap.end(); tI++) {
+		for (int col = 0; col < MAP_WIDTH; col++) {
+			if (col < MAP_WIDTH - 1) {
+				tI->second[col] = tI->second[col + 1];
+			} else {
+				tI->second[col] = newCol[tI->first];
+			}
+		}
+	}
+}
+
 void LevelMap::ChangeTileType(unsigned int row, unsigned int col, char newValue) {
 	char* targetRow = mPlayMap.at(row);
 	targetRow[col] = newValue;
@@ -54,6 +78,28 @@ bool LevelMap::GetAllTiles(char tileID, std::vector<Point2D>& posList) {
 	}
 
 	return result;
+}
+
+//alters the received pointer to an array containing 
+//a copy of a column at position of index
+//returns true if index was valid and false otherwise
+bool LevelMap::GetMapCol(char ground, int index, char*& col) {
+	//TODO: confirm method of returning an array
+	if (index < 0 || index >= MAP_WIDTH) return false;
+
+	//col = new char[MAP_HEIGHT];
+	//std::map<int, char*>::iterator tmpIT;
+
+	for (int row = 0; row < MAP_HEIGHT; row++) {
+		switch (ground) {
+			case 'b': case 'B': col[row] = mBackMap[row][index]; break;
+			case 'f': case 'F': col[row] = mForeMap[row][index]; break;
+			case 'p': case 'P': col[row] = mPlayMap[row][index]; break;
+			default: return false; break;
+		}
+	}
+
+	return true;
 }
 
 //returns texture position (from file)
@@ -183,7 +229,7 @@ void LevelMap::LoadMaps() {
 	LoadMap(mPlayMap, PLAY_MAP);
 }
 
-void LevelMap::Render(std::map<int, char*> &tMap){
+void LevelMap::Render(std::map<int, char*> &tMap, float offsetX) {
 	std::map<int, char*>::iterator tmpIT;
 	Point2D tile;
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -204,6 +250,7 @@ void LevelMap::Render(std::map<int, char*> &tMap){
 
 				//set screen rect
 				destRect = GetTileRect(tmpIT->first, i);
+				destRect.x += int(offsetX);
 				destRect.y += int(bgShakePos);
 
 				//render tile

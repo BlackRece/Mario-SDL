@@ -61,17 +61,8 @@ public:
 		LevelMap* map, Colour alphaCol = { 0,0xFF,0xFF });
 	~Character();
 
-	virtual void	Jump();
-
-	void			Render(SDL_Rect& srcRect, SDL_Rect& destRect, SDL_RendererFlip& flip);
-	void			RenderSprite(SDL_RendererFlip flip);
-
-	virtual void	Update(float deltaTime, SDL_Event e);
-	void			UpdateJump(float deltaTime, SDL_Event e);
-	void			UpdateAnim(float deltaTime, SDL_Event e);
-	void			UpdateSpriteInfo(string anim_id);
-
 	void			CancelJump();
+
 	SDL_Rect		virtual GetCollisionBox();
 	Circle2D		GetCollisionCircle();
 	float			virtual GetCollisionRadius();
@@ -86,10 +77,20 @@ public:
 	bool			HitBlock(float nextX);
 	bool			IsJumping() { return mJumping; }
 	bool			IsOnFloor();
+	virtual void	Jump();
+
+	void			Render(SDL_Rect& srcRect, SDL_Rect& destRect, SDL_RendererFlip& flip);
+	void			RenderSprite(SDL_RendererFlip flip, float offsetX = 0.0f);
 
 	void			SetMovementSpeed(float newSpeed = MOVEMENT_SPEED) { mSpeed = newSpeed; }
 	void			SetPosition(Vector2D newPosition);
 	void			SetFacingDirection(FACING newDirection);
+	
+	virtual void	Update(float deltaTime, SDL_Event e);
+	void			UpdateAnim(float deltaTime, SDL_Event e);
+	void			UpdateJump(float deltaTime, SDL_Event e);
+	void			UpdateSpriteInfo(string anim_id);
+
 };
 
 #endif // CHARACTER_H

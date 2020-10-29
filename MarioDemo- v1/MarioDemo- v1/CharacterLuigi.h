@@ -17,7 +17,7 @@ public:
 		string imagePath, Vector2D startPosition, LevelMap* map, Colour alphaCol);
 	~CharacterLuigi();
 
-	void	Render();
+	void	Render(float offsetX = 0.0f);
 	void	Respawn(Vector2D startPos);
 	void	Update(float deltaTime, SDL_Event e);
 };

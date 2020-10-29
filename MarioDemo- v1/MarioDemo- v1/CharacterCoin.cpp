@@ -29,8 +29,8 @@ void CharacterCoin::Jump() {
 	}
 }
 
-void CharacterCoin::Render() {
-	RenderSprite(SDL_FLIP_NONE);
+void CharacterCoin::Render(float offsetX) {
+	RenderSprite(SDL_FLIP_NONE, offsetX);
 }
 
 void CharacterCoin::Update(float deltaTime, SDL_Event e) {

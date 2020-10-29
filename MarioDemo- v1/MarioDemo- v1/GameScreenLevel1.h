@@ -36,6 +36,7 @@ private:
 	Mix_Music*				mMusic;
 
 	bool					mIsGameOver;
+	bool					mIsHighScore;
 	float					mGameOverTimer;
 	float					mGameCounter;
 
@@ -83,7 +84,7 @@ private:
 
 	void UpdateCoins(float deltaTime, SDL_Event e);
 	void UpdateEnemies(float deltaTime, SDL_Event e);
-	void UpdateHighScore();
+	bool UpdateHighScore();
 	void UpdatePOWBlock(float deltaTime);
 	void UpdateScreenShake(float deltaTime, SDL_Event e);
 
@@ -92,6 +93,7 @@ public:
 	~GameScreenLevel1();
 
 	void Render() override;
+	void RenderHighScore();
 	void RenderHUD();
 	void Update(float deltaTime, SDL_Event e) override;
 

@@ -43,7 +43,7 @@ void CharacterSpiny::Jump() {
 	}
 }
 
-void CharacterSpiny::Render() {
+void CharacterSpiny::Render(float offsetX) {
 	SDL_RendererFlip flip;
 
 	if (mInjured) {
@@ -60,7 +60,7 @@ void CharacterSpiny::Render() {
 		}
 	}
 
-	RenderSprite(flip);
+	RenderSprite(flip, offsetX);
 }
 
 void CharacterSpiny::TakeDamage() {

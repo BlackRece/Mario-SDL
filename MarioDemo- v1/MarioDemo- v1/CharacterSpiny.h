@@ -19,22 +19,25 @@ private:
 
 public:
 
-	CharacterSpiny(SDL_Renderer* renderer, string imagePath, LevelMap* map,
-		Vector2D startPosition, FACING startFacing, float movementSpeed,
-		Colour alphaCol = { 169, 203, 197 });
-
 	unsigned int	mValue;
 
-	void			TakeDamage();
-	void			Bounce();
-	void			Jump();
-
-	void			Render();
-	void			Update(float deltaTime, SDL_Event e);
+					CharacterSpiny(SDL_Renderer* renderer, string imagePath, LevelMap* map,
+						Vector2D startPosition, FACING startFacing, float movementSpeed,
+						Colour alphaCol = { 169, 203, 197 });
+					~CharacterSpiny() {};
 
 	bool			IsAlive() { return mIsAlive; }
 	bool			IsInjured() { return mInjured; }
+
+	void			Jump();
+
+	void			Render(float offsetX = 0.0f);
+
 	void			SetAlive(bool living) { mIsAlive = living; }
+	void			TakeDamage();
+
+	void			Update(float deltaTime, SDL_Event e);
+
 };
 
 #endif // !CHARACTERSPINY_H
